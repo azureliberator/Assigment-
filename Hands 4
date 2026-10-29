@@ -1,0 +1,89 @@
+// alan montaño 
+
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <algorithm>
+#include <iomanip>
+
+int main() {
+    std::vector<double> datos = {
+        25.0, 26.5, 29.0, 32.0, 34.0, 37.5, 39.0, 41.0, 
+        43.0, 44.5, 46.0, 47.0, 48.5, 49.0, 50.0, 51.0,
+        52.5, 54.0, 55.0, 57.0, 58.5, 59.0, 60.0, 61.5, 
+        63.0, 65.0, 67.0, 68.5, 71.0, 73.5, 77.0
+    };
+
+    int n = datos.size();
+    std::sort(datos.begin(), datos.end());
+
+    double min_val = datos.front();
+    double max_val = datos.back();
+
+    int k = std::round(1 + 3.322 * std::log10(n));
+
+    double rango = max_val - min_val;
+    double amplitud = std::ceil(rango / k);
+
+    std::cout << std::left 
+              << std::setw(8)  << "Clase"
+              << std::setw(18) << "Limite de clase"
+              << std::setw(12) << "Frecuencia(f)"
+              << std::setw(14) << "Pto Medio(Xc)"
+              << std::setw(8)  << "Fa"
+              << std::setw(8)  << "fr"
+              << std::setw(8)  << "fra"
+              << "Porcentaje %" << "\n";
+    std::cout << std::string(84, '-') << "\n";
+
+    int Fa = 0;
+    double fra = 0.0;
+    double lim_inf = min_val;
+
+    for (int i = 0; i < k; ++i) {
+        double lim_sup = lim_inf + amplitud;
+        
+        int f = 0;
+        for (double val : datos) {
+            if (i == k - 1) {
+                if (val >= lim_inf && val <= lim_sup) f++;
+            } else {
+                if (val >= lim_inf && val < lim_sup) f++;
+            }
+        }
+
+        double Xc = (lim_inf + lim_sup) / 2.0;
+        Fa += f;
+        double fr = static_cast<double>(f) / n;
+        fra += fr;
+        double porcentaje = fr * 100.0;
+      
+        std::string limites = std::to_string(static_cast<int>(lim_inf)) + " - " + std::to_string(static_cast<int>(lim_sup));
+        std::string str_pct = std::to_string(fr).substr(0, 4) + "X100=" + std::to_string(static_cast<int>(std::round(porcentaje)));
+
+        std::cout << std::left 
+                  << std::setw(8)  << (i + 1)
+                  << std::setw(18) << limites
+                  << std::setw(12) << f
+                  << std::fixed << std::setprecision(1)
+                  << std::setw(14) << Xc
+                  << std::setw(8)  << Fa
+                  << std::setprecision(2)
+                  << std::setw(8)  << fr
+                  << std::setw(8)  << fra
+                  << str_pct << "\n";
+
+        lim_inf = lim_sup;
+    }
+
+    // Fila de totales
+    std::cout << std::string(84, '-') << "\n";
+    std::cout << std::left 
+              << std::setw(26) << "TOTAL"
+              << "n = " << std::setw(28) << n
+              << std::fixed << std::setprecision(2)
+              << std::setw(8)  << fra
+              << "100%\n";
+
+    return 0;
+}
